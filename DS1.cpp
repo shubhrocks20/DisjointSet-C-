@@ -2,11 +2,12 @@
 using namespace std;
 
 class DisjointSet{
-    vector<int> rank, parent;
+    vector<int> rank, parent, size;
     public:
     DisjointSet(int n){
         rank.resize(n+1, 0);
         parent.resize(n+1);
+        size.resize(n+1, 1);
         for(int i = 0; i <= n; i++) parent[i] = i;
     }
 
@@ -32,15 +33,29 @@ class DisjointSet{
             rank[ultimateParentV]++;
         }
     }
+    void unionBySize(int u, int v){
+        int upu = findUltimateParent(u);
+        int upv = findUltimateParent(v);
+        if(upu == upv) return;
+
+        if(size[upu] > size[upv]){
+            parent[upv] = upu;
+            size[upu] += size[upv];
+        }
+        else{
+            parent[upu] = upv;
+            size[upv] += size[upu];
+        }
+    }
 };
 int main()
 {
     DisjointSet d1(7);
-    d1.unionByRank(1,2);
-    d1.unionByRank(2,3);
-    d1.unionByRank(4,5);
-    d1.unionByRank(6,7);
-    d1.unionByRank(5,6);
+    d1.unionBySize(1,2);
+    d1.unionBySize(2,3);
+    d1.unionBySize(4,5);
+    d1.unionBySize(6,7);
+    d1.unionBySize(5,6);
 
     if(d1.findUltimateParent(3) == d1.findUltimateParent(7)){
         cout<<"Same Component"<<endl;
@@ -49,7 +64,7 @@ int main()
         cout<<"Not same component"<<endl;
     }
 
-    d1.unionByRank(3,7);
+    d1.unionBySize(3,7);
     if(d1.findUltimateParent(3) == d1.findUltimateParent(7)){
         cout<<"Same Component"<<endl;
     }
